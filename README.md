@@ -2,7 +2,7 @@
 
 ## AI-Powered Interview Preparation Platform
 
-InterviewPrepAI is a MERN stack application designed to help users prepare for interviews using AI-generated interview questions and session management.
+InterviewPrepAI is a MERN stack application designed to help users prepare for interviews using AI-generated interview questions, concept explanations, and session management.
 
 ---
 
@@ -45,13 +45,13 @@ InterviewPrepAI is a MERN stack application designed to help users prepare for i
 
 ---
 
-## Frontend
+## Frontend (in progress)
 - React.js
 - Tailwind CSS
 
 ---
 
-## AI Integration (Upcoming)
+## AI Integration
 - Google Gemini API
 
 ---
@@ -99,6 +99,7 @@ npm install
 PORT=8000
 MONGO_URI=your_mongodb_uri
 JWT_SECRET=your_secret
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 ---
@@ -117,21 +118,26 @@ npm run dev
 - Authentication APIs
 - Session APIs
 - Question APIs
+- AI Question Generation APIs
+- AI Concept Explanation APIs
 - MongoDB Integration
 - Image Upload System
 
 ---
 
-## Upcoming Features
-- AI Question Generation
-- AI Explanation APIs
-- Mock Interview System
+## AI Features
+
+- AI-powered interview question generation
+- AI concept explanation system
+- Gemini API integration
+- Interview-focused prompt engineering
+- Structured JSON AI responses
 
 ---
 
 # Author
 
-Sunny Srivastava
+Sunny Kumar Srivastava
 
 CSE (AI & ML) Student  
 Techno Main Salt Lake, Kolkata
