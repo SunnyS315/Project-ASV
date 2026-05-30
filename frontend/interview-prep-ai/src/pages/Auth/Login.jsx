@@ -2,12 +2,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/Inputs/Input";
 import { validateEmail } from "../../utils/helper";
+import { API_PATHS } from "../../utils/apiPath";
+import axiosInstance from "../../utils/axiosInstance";
+import { useContext } from "react";
+import { UserContext } from "../../context/AuthContext";
+
 
 const Login = ({ setCurrentPage }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
 
+    const { updateUser } = useContext(UserContext);
     const navigate = useNavigate();
 
     //Handle Login Form Submit
@@ -28,7 +34,17 @@ const Login = ({ setCurrentPage }) => {
 
         //Login API Call
         try {
+            const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
+                email,
+                password,
+            });
 
+            const { token } = response.data;
+            if (token) {
+                localStorage.setItem("token", token);
+                updateUser(response.data); // Update user context with the fetched user data
+                navigate("/dashboard");
+            }
         } catch (error) {
             if (error.response && error.response.data.message) {
                 setError(error.response.data.message);
