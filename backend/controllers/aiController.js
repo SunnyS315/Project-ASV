@@ -16,10 +16,40 @@ const generateInterviewQuestions = async (req, res) => {
 
         const prompt = questionAnswerPrompt(role, experience, topicsToFocus, numberOfQuestions);
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-        });
+        let response;
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                response = await ai.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: prompt,
+                });
+
+                break; // Success
+            } catch (error) {
+                const errorMsg = error.message || "";
+
+                // Retry only for Gemini overload errors
+                if (
+                    attempt < 3 &&
+                    (errorMsg.includes("503") ||
+                    errorMsg.includes("high demand") ||
+                    errorMsg.includes("temporarily unavailable"))
+                ) {
+                    console.log(
+                        `Gemini busy. Retrying (${attempt}/3)...`
+                    );
+
+                    await new Promise((resolve) =>
+                        setTimeout(resolve, 2000)
+                    );
+
+                    continue;
+                }
+
+                throw error;
+            }
+        }
 
         let rawText = response.text;
 
@@ -54,10 +84,37 @@ const generateConceptExplanation = async (req, res) => {
 
         const prompt = conceptExplainPrompt(question);
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-        });
+        let response;
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+            try {
+                response = await ai.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: prompt,
+                });
+
+                break;
+            } catch (error) {
+                const errorMsg = error.message || "";
+
+                if (
+                    attempt < 3 &&
+                    (errorMsg.includes("503") ||
+                    errorMsg.includes("high demand") ||
+                    errorMsg.includes("temporarily unavailable"))
+                ) {
+                    console.log(`Gemini busy. Retrying (${attempt}/3)...`);
+
+                    await new Promise((resolve) =>
+                        setTimeout(resolve, 2000)
+                    );
+
+                    continue;
+                }
+
+                throw error;
+            }
+        }
 
         let rawText = response.text;
 
@@ -67,13 +124,16 @@ const generateConceptExplanation = async (req, res) => {
             .replace(/```/g, "") // Removes "```" anywhere
             .trim(); // Remove extra spaces
 
-        // Parse the JSON object
-        const data = JSON.parse(cleanedText);
+        res.status(200).json({
+            title: question,
+            explanation: cleanedText
+        });
+        } catch (error) {
+        console.error("Generate Explanation Error:");
+        console.error(error);
 
-        res.status(200).json(data);
-    } catch (error) {
         res.status(500).json({
-            message: 'Failed to generate explanation',
+            message: "Failed to generate explanation",
             error: error.message,
         });
     }
