@@ -1,4 +1,4 @@
-# InterviewPrepAI
+# InterviewPrepAI :-
 
 ## AI-Powered Interview Preparation Platform
 
